@@ -6,7 +6,7 @@ echo "Job ID: ${JOB_ID}"
 
 # Start Chrome (using Playwright's chromium)
 CHROME_BIN=$(find /root/.cache/ms-playwright -name "chrome" -path "*/chrome-linux/*" | head -1)
-$CHROME_BIN --headless --no-sandbox --disable-gpu --remote-debugging-port=9222 &
+$CHROME_BIN --headless --no-sandbox --disable-gpu --remote-debugging-port=9222 2>/dev/null &
 CHROME_PID=$!
 sleep 2
 
