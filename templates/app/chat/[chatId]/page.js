@@ -1,5 +1,5 @@
-import { auth } from 'thepopebot/auth';
-import { ChatPage } from 'thepopebot/chat';
+import { auth } from '@harbinger-ai/harbinger/auth';
+import { ChatPage } from '@harbinger-ai/harbinger/chat';
 
 export default async function ChatRoute({ params }) {
   const { chatId } = await params;

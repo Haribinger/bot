@@ -84,7 +84,7 @@ Tell the agent to test the skill with real input after creating it and fix any i
 ## Credential setup
 
 If a skill needs an API key, the user should set it up BEFORE the job runs:
-- `npx thepopebot set-agent-llm-secret <KEY_NAME> <value>` — creates a GitHub secret with `AGENT_LLM_` prefix, exposed as an env var in the Docker container
+- `npx harbinger set-agent-llm-secret <KEY_NAME> <value>` — creates a GitHub secret with `AGENT_LLM_` prefix, exposed as an env var in the Docker container
 - The value is stored exactly as provided, no transformation needed
 - Also add to `.env` for local development
 - Keys can be rotated later with the same command

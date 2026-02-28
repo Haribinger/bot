@@ -1,5 +1,5 @@
-import { auth } from 'thepopebot/auth';
-import { FindingsPage } from 'thepopebot/chat';
+import { auth } from '@harbinger-ai/harbinger/auth';
+import { FindingsPage } from '@harbinger-ai/harbinger/chat';
 
 export default async function FindingsRoute() {
   const session = await auth();

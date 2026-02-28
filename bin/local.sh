@@ -2,7 +2,7 @@
 set -e
 
 PACKAGE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-DEV_DIR="${1:-/tmp/thepopebot.local}"
+DEV_DIR="${1:-/tmp/harbinger.local}"
 ENV_BACKUP="/tmp/env.$(uuidgen)"
 
 HAS_ENV=false
@@ -17,7 +17,7 @@ cd "$DEV_DIR"
 
 node "$PACKAGE_DIR/bin/cli.js" init
 
-sed -i '' "s|\"thepopebot\": \".*\"|\"thepopebot\": \"file:$PACKAGE_DIR\"|" package.json
+sed -i '' "s|\"@harbinger-ai/harbinger\": \".*\"|\"@harbinger-ai/harbinger\": \"file:$PACKAGE_DIR\"|" package.json
 
 rm -rf node_modules package-lock.json
 npm install --install-links

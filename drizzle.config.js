@@ -5,7 +5,7 @@ export default {
   out: './drizzle',
   dialect: 'sqlite',  // or 'postgresql' if using PostgreSQL
   dbCredentials: {
-    url: './data/thepopebot.sqlite'  // path to your SQLite database
+    url: './data/thepopebot.sqlite'  // path to your SQLite database (legacy name kept for backwards compatibility)
   },
   verbose: true,
   strict: true

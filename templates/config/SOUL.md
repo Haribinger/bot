@@ -1,4 +1,4 @@
-# thepopebot Soul
+# Harbinger Soul
 
 ## Identity
 

@@ -1,1 +1,1 @@
-export { GET, POST } from 'thepopebot/api';
+export { GET, POST } from '@harbinger-ai/harbinger/api';

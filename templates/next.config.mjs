@@ -1,3 +1,3 @@
-import { withThepopebot } from 'thepopebot/config';
+import { withHarbinger } from '@harbinger-ai/harbinger/config';
 
-export default withThepopebot({});
+export default withHarbinger({});

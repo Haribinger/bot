@@ -1,10 +1,10 @@
 /**
- * Next.js instrumentation hook for thepopebot.
+ * Next.js instrumentation hook for Harbinger.
  * This file is loaded by Next.js on server start when instrumentationHook is enabled.
  *
  * Users should create an instrumentation.js in their project root that imports this:
  *
- *   export { register } from 'thepopebot/instrumentation';
+ *   export { register } from '@harbinger-ai/harbinger/instrumentation';
  *
  * Or they can re-export and add their own logic.
  */
@@ -48,19 +48,19 @@ export async function register() {
   const agents = discoverAgents();
   if (agents.length > 0) {
     const names = agents.map(a => a.codename || a.id).join(', ');
-    console.log(`thepopebot: ${agents.length} agent profiles loaded (${names})`);
-    console.log('thepopebot: use @AGENT_NAME in chat to route to a specific agent');
+    console.log(`harbinger: ${agents.length} agent profiles loaded (${names})`);
+    console.log('harbinger: use @AGENT_NAME in chat to route to a specific agent');
   }
 
   // Optionally start autonomous thinking engine
   if (process.env.AUTONOMOUS_THINKING === 'true') {
     const { startAutonomousEngine } = await import('../lib/ai/autonomous-engine.js');
     startAutonomousEngine({
-      agentId: 'thepopebot',
-      agentName: 'THEPOPEBOT',
+      agentId: 'harbinger',
+      agentName: 'HARBINGER',
       interval: Number(process.env.AUTONOMOUS_INTERVAL) || 60000,
     });
-    console.log('thepopebot: autonomous thinking engine started');
+    console.log('harbinger: autonomous thinking engine started');
   }
 
   // Start cron scheduler
@@ -77,17 +77,17 @@ export async function register() {
     const stored = getAvailableVersion();
     if (stored) setUpdateAvailable(stored);
   } catch (err) {
-    console.warn('thepopebot: update check warm-up failed:', err.message);
+    console.warn('harbinger: update check warm-up failed:', err.message);
   }
 
   // Pre-warm MCP client (load external tools)
   try {
     const { loadMcpTools } = await import('../lib/mcp/client.js');
     const mcpTools = await loadMcpTools();
-    if (mcpTools.length > 0) console.log(`thepopebot: ${mcpTools.length} MCP tools loaded`);
+    if (mcpTools.length > 0) console.log(`harbinger: ${mcpTools.length} MCP tools loaded`);
   } catch (err) {
-    console.warn('thepopebot: MCP tools pre-warm failed:', err.message);
+    console.warn('harbinger: MCP tools pre-warm failed:', err.message);
   }
 
-  console.log('thepopebot initialized');
+  console.log('harbinger initialized');
 }

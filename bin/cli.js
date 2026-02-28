@@ -49,10 +49,10 @@ function templatePath(userPath, templatesDir) {
 
 function printUsage() {
   console.log(`
-Usage: thepopebot <command>
+Usage: harbinger <command>
 
 Commands:
-  init                              Scaffold a new thepopebot project
+  init                              Scaffold a new Harbinger project
   setup                             Run interactive setup wizard
   setup-telegram                    Reconfigure Telegram webhook
   reset-auth                        Regenerate AUTH_SECRET (invalidates all sessions)
@@ -90,7 +90,7 @@ async function init() {
   const templatesDir = path.join(packageDir, 'templates');
   const noManaged = args.includes('--no-managed');
 
-  // Guard: warn if the directory is not empty (unless it's an existing thepopebot project)
+  // Guard: warn if the directory is not empty (unless it's an existing Harbinger project)
   const entries = fs.readdirSync(cwd);
   if (entries.length > 0) {
     const pkgPath = path.join(cwd, 'package.json');
@@ -100,7 +100,7 @@ async function init() {
         const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
         const deps = pkg.dependencies || {};
         const devDeps = pkg.devDependencies || {};
-        if (deps.thepopebot || devDeps.thepopebot) {
+        if (deps['@harbinger-ai/harbinger'] || devDeps['@harbinger-ai/harbinger'] || deps.thepopebot || devDeps.thepopebot) {
           isExistingProject = true;
         }
       } catch {}
@@ -111,7 +111,7 @@ async function init() {
       const { text, isCancel } = await import('@clack/prompts');
       const dirName = await text({
         message: 'Project directory name:',
-        defaultValue: 'my-popebot',
+        defaultValue: 'my-agent',
       });
       if (isCancel(dirName)) {
         console.log('\nCancelled.\n');
@@ -125,7 +125,7 @@ async function init() {
     }
   }
 
-  console.log('\nScaffolding thepopebot project...\n');
+  console.log('\nScaffolding Harbinger project...\n');
 
   const templateFiles = getTemplateFiles(templatesDir);
   const created = [];
@@ -168,7 +168,7 @@ async function init() {
   if (!fs.existsSync(pkgPath)) {
     const dirName = path.basename(cwd);
     const { version } = JSON.parse(fs.readFileSync(path.join(packageDir, 'package.json'), 'utf8'));
-    const thepopebotDep = version.includes('-') ? version : '^1.0.0';
+    const harbingerDep = version.includes('-') ? version : '^1.0.0';
     const pkg = {
       name: dirName,
       private: true,
@@ -176,12 +176,12 @@ async function init() {
         dev: 'next dev --turbopack',
         build: 'next build',
         start: 'next start',
-        setup: 'thepopebot setup',
-        'setup-telegram': 'thepopebot setup-telegram',
-        'reset-auth': 'thepopebot reset-auth',
+        setup: 'harbinger setup',
+        'setup-telegram': 'harbinger setup-telegram',
+        'reset-auth': 'harbinger reset-auth',
       },
       dependencies: {
-        thepopebot: thepopebotDep,
+        '@harbinger-ai/harbinger': harbingerDep,
         next: '^15.5.12',
         'next-auth': '5.0.0-beta.30',
         'next-themes': '^0.4.0',
@@ -247,12 +247,12 @@ async function init() {
   if (changed.length > 0) {
     console.log('\n  Updated templates available:');
     console.log('  These files differ from the current package templates.');
-    console.log('  This may be from your edits, or from a thepopebot update.\n');
+    console.log('  This may be from your edits, or from a Harbinger update.\n');
     for (const file of changed) {
       console.log(`    ${file}`);
     }
-    console.log('\n  To view differences:  npx thepopebot diff <file>');
-    console.log('  To reset to default:  npx thepopebot reset <file>');
+    console.log('\n  To view differences:  npx harbinger diff <file>');
+    console.log('  To reset to default:  npx harbinger reset <file>');
   }
 
   // Run npm install
@@ -262,32 +262,34 @@ async function init() {
   // Create or update .env with auto-generated infrastructure values
   const envPath = path.join(cwd, '.env');
   const { randomBytes } = await import('crypto');
-  const thepopebotPkg = JSON.parse(fs.readFileSync(path.join(packageDir, 'package.json'), 'utf8'));
-  const version = thepopebotPkg.version;
+  const harbingerPkg = JSON.parse(fs.readFileSync(path.join(packageDir, 'package.json'), 'utf8'));
+  const version = harbingerPkg.version;
 
   if (!fs.existsSync(envPath)) {
     // Seed .env for new projects
     const authSecret = randomBytes(32).toString('base64');
-    const seedEnv = `# thepopebot Configuration
+    const seedEnv = `# Harbinger Configuration
 # Run "npm run setup" to complete configuration
 
 AUTH_SECRET=${authSecret}
 AUTH_TRUST_HOST=true
-THEPOPEBOT_VERSION=${version}
+HARBINGER_VERSION=${version}
 `;
     fs.writeFileSync(envPath, seedEnv);
-    console.log(`  Created .env (AUTH_SECRET, THEPOPEBOT_VERSION=${version})`);
+    console.log(`  Created .env (AUTH_SECRET, HARBINGER_VERSION=${version})`);
   } else {
-    // Update THEPOPEBOT_VERSION in existing .env
+    // Update HARBINGER_VERSION in existing .env (also migrate legacy THEPOPEBOT_VERSION key)
     try {
       let envContent = fs.readFileSync(envPath, 'utf8');
-      if (envContent.match(/^THEPOPEBOT_VERSION=.*/m)) {
-        envContent = envContent.replace(/^THEPOPEBOT_VERSION=.*/m, `THEPOPEBOT_VERSION=${version}`);
+      if (envContent.match(/^HARBINGER_VERSION=.*/m)) {
+        envContent = envContent.replace(/^HARBINGER_VERSION=.*/m, `HARBINGER_VERSION=${version}`);
+      } else if (envContent.match(/^THEPOPEBOT_VERSION=.*/m)) {
+        envContent = envContent.replace(/^THEPOPEBOT_VERSION=.*/m, `HARBINGER_VERSION=${version}`);
       } else {
-        envContent = envContent.trimEnd() + `\nTHEPOPEBOT_VERSION=${version}\n`;
+        envContent = envContent.trimEnd() + `\nHARBINGER_VERSION=${version}\n`;
       }
       fs.writeFileSync(envPath, envContent);
-      console.log(`  Updated THEPOPEBOT_VERSION to ${version}`);
+      console.log(`  Updated HARBINGER_VERSION to ${version}`);
     } catch {}
   }
 
@@ -308,8 +310,8 @@ function reset(filePath) {
     for (const file of files) {
       console.log(`  ${destPath(file)}`);
     }
-    console.log('\nUsage: thepopebot reset <file>');
-    console.log('Example: thepopebot reset config/SOUL.md\n');
+    console.log('\nUsage: harbinger reset <file>');
+    console.log('Example: harbinger reset config/SOUL.md\n');
     return;
   }
 
@@ -319,7 +321,7 @@ function reset(filePath) {
 
   if (!fs.existsSync(src)) {
     console.error(`\nTemplate not found: ${filePath}`);
-    console.log('Run "thepopebot reset" to see available templates.\n');
+    console.log('Run "harbinger reset" to see available templates.\n');
     process.exit(1);
   }
 
@@ -365,8 +367,8 @@ function diff(filePath) {
     if (!anyDiff) {
       console.log('  All files match package templates.');
     }
-    console.log('\nUsage: thepopebot diff <file>');
-    console.log('Example: thepopebot diff config/SOUL.md\n');
+    console.log('\nUsage: harbinger diff <file>');
+    console.log('Example: harbinger diff config/SOUL.md\n');
     return;
   }
 
@@ -381,7 +383,7 @@ function diff(filePath) {
 
   if (!fs.existsSync(dest)) {
     console.log(`\n${filePath} does not exist in your project.`);
-    console.log(`Run "thepopebot reset ${filePath}" to create it.\n`);
+    console.log(`Run "harbinger reset ${filePath}" to create it.\n`);
     return;
   }
 
@@ -391,7 +393,7 @@ function diff(filePath) {
     console.log('\nFiles are identical.\n');
   } catch (e) {
     // git diff exits with 1 when files differ (output already printed)
-    console.log(`\n  To reset: thepopebot reset ${filePath}\n`);
+    console.log(`\n  To reset: harbinger reset ${filePath}\n`);
   }
 }
 
@@ -489,7 +491,7 @@ function readStdin() {
 
 /**
  * Prompt for a secret value interactively if not provided as an argument.
- * Supports piped stdin (e.g. echo "val" | thepopebot set-var KEY).
+ * Supports piped stdin (e.g. echo "val" | harbinger set-var KEY).
  */
 async function promptForValue(key) {
   const stdin = await readStdin();
@@ -516,8 +518,8 @@ async function promptForValue(key) {
 
 async function setAgentSecret(key, value) {
   if (!key) {
-    console.error('\n  Usage: thepopebot set-agent-secret <KEY> [VALUE]\n');
-    console.error('  Example: thepopebot set-agent-secret ANTHROPIC_API_KEY\n');
+    console.error('\n  Usage: harbinger set-agent-secret <KEY> [VALUE]\n');
+    console.error('  Example: harbinger set-agent-secret ANTHROPIC_API_KEY\n');
     process.exit(1);
   }
 
@@ -543,8 +545,8 @@ async function setAgentSecret(key, value) {
 
 async function setAgentLlmSecret(key, value) {
   if (!key) {
-    console.error('\n  Usage: thepopebot set-agent-llm-secret <KEY> [VALUE]\n');
-    console.error('  Example: thepopebot set-agent-llm-secret BRAVE_API_KEY\n');
+    console.error('\n  Usage: harbinger set-agent-llm-secret <KEY> [VALUE]\n');
+    console.error('  Example: harbinger set-agent-llm-secret BRAVE_API_KEY\n');
     process.exit(1);
   }
 
@@ -566,8 +568,8 @@ async function setAgentLlmSecret(key, value) {
 
 async function setVar(key, value) {
   if (!key) {
-    console.error('\n  Usage: thepopebot set-var <KEY> [VALUE]\n');
-    console.error('  Example: thepopebot set-var LLM_MODEL claude-sonnet-4-5-20250929\n');
+    console.error('\n  Usage: harbinger set-var <KEY> [VALUE]\n');
+    console.error('  Example: harbinger set-var LLM_MODEL claude-sonnet-4-5-20250929\n');
     process.exit(1);
   }
 
