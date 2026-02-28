@@ -48,15 +48,18 @@ export function AppSidebar({ user }) {
     <>
     <Sidebar>
       <SidebarHeader>
-        {/* Top row: brand name + toggle icon (open) or just toggle icon (collapsed) */}
+        {/* Top row: brand name + toggle */}
         <div className={collapsed ? 'flex justify-center' : 'flex items-center justify-between'}>
           {!collapsed && (
-            <span className="px-2 font-semibold text-lg">ThePopeBot{version && <span className="text-[11px] font-normal text-muted-foreground"> v{version}</span>}</span>
+            <span className="px-2 text-lg tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>
+              <span className="font-semibold text-[--cyan]">Harbinger</span>
+              {version && <span className="text-[10px] font-mono font-normal text-muted-foreground ml-1.5">v{version}</span>}
+            </span>
           )}
           <Tooltip>
             <TooltipTrigger asChild>
               <button
-                className="inline-flex shrink-0 items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-background hover:text-foreground"
+                className="inline-flex shrink-0 items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-white/[0.04] hover:text-foreground transition-colors"
                 onClick={toggleSidebar}
               >
                 <PanelLeftIcon size={16} />
@@ -90,15 +93,13 @@ export function AppSidebar({ user }) {
             </Tooltip>
           </SidebarMenuItem>
 
-          {/* Chats history */}
+          {/* Chats */}
           <SidebarMenuItem>
             <Tooltip>
               <TooltipTrigger asChild>
                 <SidebarMenuButton
                   className={collapsed ? 'justify-center' : ''}
-                  onClick={() => {
-                    window.location.href = '/chats';
-                  }}
+                  onClick={() => { window.location.href = '/chats'; }}
                 >
                   <MessageIcon size={16} />
                   {!collapsed && <span>Chats</span>}
@@ -116,9 +117,7 @@ export function AppSidebar({ user }) {
               <TooltipTrigger asChild>
                 <SidebarMenuButton
                   className={collapsed ? 'justify-center' : ''}
-                  onClick={() => {
-                    window.location.href = '/swarm';
-                  }}
+                  onClick={() => { window.location.href = '/swarm'; }}
                 >
                   <SwarmIcon size={16} />
                   {!collapsed && <span>Swarm</span>}
@@ -190,23 +189,21 @@ export function AppSidebar({ user }) {
               <TooltipTrigger asChild>
                 <SidebarMenuButton
                   className={collapsed ? 'justify-center' : ''}
-                  onClick={() => {
-                    window.location.href = '/notifications';
-                  }}
+                  onClick={() => { window.location.href = '/notifications'; }}
                 >
                   <BellIcon size={16} />
                   {!collapsed && (
                     <span className="flex items-center gap-2">
                       Notifications
                       {unreadCount > 0 && (
-                        <span className="inline-flex items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[10px] font-medium leading-none text-destructive-foreground">
+                        <span className="inline-flex items-center justify-center rounded-full bg-[--destructive] px-1.5 py-0.5 text-[10px] font-medium leading-none text-white">
                           {unreadCount}
                         </span>
                       )}
                     </span>
                   )}
                   {collapsed && unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 inline-flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-medium text-destructive-foreground">
+                    <span className="absolute -top-1 -right-1 inline-flex h-4 w-4 items-center justify-center rounded-full bg-[--destructive] text-[10px] font-medium text-white">
                       {unreadCount}
                     </span>
                   )}
@@ -218,7 +215,7 @@ export function AppSidebar({ user }) {
             </Tooltip>
           </SidebarMenuItem>
 
-          {/* Upgrade (only when update is available) */}
+          {/* Upgrade */}
           {updateAvailable && (
             <SidebarMenuItem>
               <Tooltip>
@@ -230,13 +227,13 @@ export function AppSidebar({ user }) {
                     <span className="relative">
                       <ArrowUpCircleIcon size={16} />
                       {collapsed && (
-                        <span className="absolute -top-1 -right-1 inline-block h-2 w-2 rounded-full bg-emerald-500" />
+                        <span className="absolute -top-1 -right-1 inline-block h-2 w-2 rounded-full bg-[--cyan]" />
                       )}
                     </span>
                     {!collapsed && (
                       <span className="flex items-center gap-2">
                         Upgrade
-                        <span className="inline-flex items-center justify-center rounded-full bg-emerald-500 px-1.5 py-0.5 text-[10px] font-medium leading-none text-white">
+                        <span className="inline-flex items-center justify-center rounded-full bg-[--cyan] px-1.5 py-0.5 text-[10px] font-medium leading-none text-primary-foreground">
                           v{updateAvailable}
                         </span>
                       </span>
@@ -274,13 +271,12 @@ export function AppSidebar({ user }) {
       {!collapsed && (
         <SidebarContent>
           <SidebarGroup className="pt-0">
-            <SidebarGroupLabel>Chats</SidebarGroupLabel>
+            <SidebarGroupLabel className="font-mono text-[10px] uppercase tracking-wider">Chats</SidebarGroupLabel>
           </SidebarGroup>
           <SidebarHistory />
         </SidebarContent>
       )}
 
-      {/* Spacer when collapsed to push footer down */}
       {collapsed && <div className="flex-1" />}
 
       <SidebarFooter>

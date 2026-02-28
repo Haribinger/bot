@@ -9,6 +9,8 @@
  * @param {Object} nextConfig - User's Next.js config
  * @returns {Object} Enhanced Next.js config
  */
+export const withHarbinger = withThepopebot;
+
 export function withThepopebot(nextConfig = {}) {
   return {
     ...nextConfig,

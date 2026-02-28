@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useEffect, useState } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { PreviewMessage, ThinkingMessage } from './message.js';
 import { Greeting } from './greeting.js';
 import { ArrowDown } from 'lucide-react';
@@ -38,21 +39,23 @@ export function Messages({ messages, status, onRetry, onEdit }) {
   return (
     <div className="relative flex-1">
       <div
-        className="absolute inset-0 touch-pan-y overflow-y-auto"
+        className="absolute inset-0 touch-pan-y overflow-y-auto scrollbar-thin"
         ref={containerRef}
       >
         <div className="mx-auto flex min-w-0 max-w-4xl flex-col gap-4 px-4 py-4 md:gap-6 md:px-6">
           {messages.length === 0 && <Greeting />}
 
-          {messages.map((message, index) => (
-            <PreviewMessage
-              key={message.id}
-              message={message}
-              isLoading={status === 'streaming' && index === messages.length - 1}
-              onRetry={onRetry}
-              onEdit={onEdit}
-            />
-          ))}
+          <AnimatePresence mode="popLayout">
+            {messages.map((message, index) => (
+              <PreviewMessage
+                key={message.id}
+                message={message}
+                isLoading={status === 'streaming' && index === messages.length - 1}
+                onRetry={onRetry}
+                onEdit={onEdit}
+              />
+            ))}
+          </AnimatePresence>
 
           {status === 'submitted' && <ThinkingMessage />}
 
@@ -62,7 +65,7 @@ export function Messages({ messages, status, onRetry, onEdit }) {
 
       {!isAtBottom && (
         <button
-          className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-full border border-border bg-background p-2 shadow-lg hover:bg-muted"
+          className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-full border border-white/[0.06] bg-[--card] p-2 shadow-lg hover:bg-white/[0.04]"
           onClick={scrollToBottom}
           aria-label="Scroll to bottom"
         >

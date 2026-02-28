@@ -16,7 +16,6 @@ const MAX_FILES = 5;
 
 function isAcceptedType(file) {
   if (ACCEPTED_TYPES.includes(file.type)) return true;
-  // Fall back to extension for files with generic MIME types
   const ext = file.name?.split('.').pop()?.toLowerCase();
   const textExts = ['txt', 'md', 'csv', 'json', 'js', 'ts', 'jsx', 'tsx', 'py', 'html', 'css', 'yml', 'yaml', 'xml', 'sh', 'bash', 'rb', 'go', 'rs', 'java', 'c', 'cpp', 'h', 'hpp'];
   return textExts.includes(ext);
@@ -43,7 +42,6 @@ export function ChatInput({ input, setInput, onSubmit, status, stop, files, setF
   const [isDragging, setIsDragging] = useState(false);
   const isStreaming = status === 'streaming' || status === 'submitted';
 
-  // Auto-resize textarea
   const adjustHeight = useCallback(() => {
     const textarea = textareaRef.current;
     if (!textarea) return;
@@ -55,7 +53,6 @@ export function ChatInput({ input, setInput, onSubmit, status, stop, files, setF
     adjustHeight();
   }, [input, adjustHeight]);
 
-  // Focus textarea on mount
   useEffect(() => {
     textareaRef.current?.focus();
   }, []);
@@ -64,7 +61,6 @@ export function ChatInput({ input, setInput, onSubmit, status, stop, files, setF
     const newFiles = Array.from(fileList).filter(isAcceptedType);
     if (newFiles.length === 0) return;
 
-    // Read files outside state updater to avoid React strict mode double-invocation
     newFiles.forEach((file) => {
       const reader = new FileReader();
       reader.onload = () => {
@@ -119,8 +115,8 @@ export function ChatInput({ input, setInput, onSubmit, status, stop, files, setF
       <form onSubmit={handleSubmit} className="relative">
         <div
           className={cn(
-            'flex flex-col rounded-xl border bg-muted p-2 transition-colors',
-            isDragging ? 'border-primary bg-primary/5' : 'border-border'
+            'flex flex-col rounded-lg border bg-[--card] p-2 transition-colors backdrop-blur-sm',
+            isDragging ? 'border-[--primary] bg-[--primary]/5' : 'border-white/[0.06]'
           )}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -140,9 +136,9 @@ export function ChatInput({ input, setInput, onSubmit, status, stop, files, setF
                         className="h-16 w-16 rounded-lg object-cover"
                       />
                     ) : (
-                      <div className="flex h-16 items-center gap-1.5 rounded-lg bg-foreground/10 px-3">
+                      <div className="flex h-16 items-center gap-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] px-3">
                         <FileTextIcon size={14} />
-                        <span className="max-w-[100px] truncate text-xs">
+                        <span className="max-w-[100px] truncate text-xs font-mono">
                           {f.file.name}
                         </span>
                       </div>
@@ -166,7 +162,7 @@ export function ChatInput({ input, setInput, onSubmit, status, stop, files, setF
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="inline-flex items-center justify-center rounded-lg p-2 text-muted-foreground hover:text-foreground"
+              className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:text-[--cyan] transition-colors"
               aria-label="Attach files"
               disabled={isStreaming}
             >
@@ -193,8 +189,8 @@ export function ChatInput({ input, setInput, onSubmit, status, stop, files, setF
               placeholder="Send a message..."
               rows={1}
               className={cn(
-                'flex-1 resize-none bg-transparent px-2 py-1.5 text-sm text-foreground',
-                'placeholder:text-muted-foreground focus:outline-none',
+                'flex-1 resize-none bg-transparent px-2 py-1.5 text-sm text-foreground font-mono',
+                'placeholder:text-muted-foreground/50 focus:outline-none',
                 'max-h-[200px]'
               )}
               disabled={isStreaming}
@@ -204,7 +200,7 @@ export function ChatInput({ input, setInput, onSubmit, status, stop, files, setF
               <button
                 type="button"
                 onClick={stop}
-                className="inline-flex items-center justify-center rounded-lg bg-foreground p-2 text-background hover:opacity-80"
+                className="inline-flex items-center justify-center rounded-md bg-foreground p-2 text-background hover:opacity-80 transition-opacity"
                 aria-label="Stop generating"
               >
                 <StopIcon size={16} />
@@ -214,10 +210,10 @@ export function ChatInput({ input, setInput, onSubmit, status, stop, files, setF
                 type="submit"
                 disabled={!canSend}
                 className={cn(
-                  'inline-flex items-center justify-center rounded-lg p-2',
+                  'inline-flex items-center justify-center rounded-md p-2 transition-all',
                   canSend
-                    ? 'bg-foreground text-background hover:opacity-80'
-                    : 'bg-muted-foreground/20 text-muted-foreground cursor-not-allowed'
+                    ? 'bg-[--primary] text-primary-foreground hover:opacity-80'
+                    : 'bg-white/[0.04] text-muted-foreground/40 cursor-not-allowed'
                 )}
                 aria-label="Send message"
               >

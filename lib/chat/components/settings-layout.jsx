@@ -22,11 +22,11 @@ export function SettingsLayout({ session, children }) {
     <PageLayout session={session}>
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold">Settings</h1>
+        <h1 className="text-2xl font-semibold" style={{ fontFamily: 'var(--font-display)' }}>Settings</h1>
       </div>
 
       {/* Tab navigation */}
-      <div className="flex gap-1 border-b border-border mb-6">
+      <div className="flex gap-2 mb-6">
         {TABS.map((tab) => {
           const isActive = activePath === tab.href || activePath.startsWith(tab.href + '/');
           const Icon = tab.icon;
@@ -34,13 +34,13 @@ export function SettingsLayout({ session, children }) {
             <a
               key={tab.id}
               href={tab.href}
-              className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium border-b-2 transition-colors ${
+              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono font-medium transition-colors border ${
                 isActive
-                  ? 'border-foreground text-foreground'
-                  : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                  ? 'bg-[--primary]/10 text-[--cyan] border-[--primary]/20'
+                  : 'border-white/[0.06] text-muted-foreground hover:text-foreground hover:border-white/[0.12]'
               }`}
             >
-              <Icon size={14} />
+              <Icon size={12} />
               {tab.label}
             </a>
           );
