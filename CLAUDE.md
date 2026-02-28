@@ -33,6 +33,9 @@ The `templates/` directory contains **only files that get scaffolded into user p
 │   ├── channels/               # Channel adapters (base class, Telegram, factory)
 │   ├── chat/                   # Chat route handler, server actions, React UI components
 │   ├── db/                     # SQLite via Drizzle (schema, migrations, api-keys)
+│   ├── mcp/                    # MCP server (tools/resources/prompts) and client (external tool loader)
+│   ├── bounty/                 # Bug bounty management (programs, targets, findings, platform sync)
+│   ├── registry/               # Security tool catalog (68+ tools) and Docker container management
 │   ├── tools/                  # Job creation, GitHub API, Telegram, OpenAI Whisper
 │   └── utils/
 │       └── render-md.js        # Markdown {{include}} processor
@@ -65,6 +68,11 @@ The `templates/` directory contains **only files that get scaffolded into user p
 | `lib/channels/base.js` | Channel adapter base class (normalize messages across platforms) |
 | `lib/db/index.js` | Database initialization — SQLite via Drizzle ORM |
 | `lib/db/api-keys.js` | API key management (SHA-256 hashed, timing-safe verify) |
+| `lib/mcp/server.js` | MCP server with 5 tools, 5 resources, 1 prompt |
+| `lib/mcp/handler.js` | HTTP handler for `/api/mcp` (Streamable HTTP transport) |
+| `lib/mcp/client.js` | External MCP tool loader via `@langchain/mcp-adapters` |
+| `lib/bounty/sync-targets.js` | Syncs targets from bounty-targets-data (HackerOne, Bugcrowd, etc.) |
+| `lib/registry/catalog.js` | Built-in catalog of 68+ security tools |
 
 ## NPM Package Exports
 
@@ -80,6 +88,7 @@ The `templates/` directory contains **only files that get scaffolded into user p
 | `thepopebot/chat/api` | `lib/chat/api.js` | Dedicated chat streaming route handler (session auth) |
 | `thepopebot/db` | `lib/db/index.js` | Database access |
 | `thepopebot/middleware` | `lib/auth/middleware.js` | Auth middleware |
+| `thepopebot/mcp` | `lib/mcp/server.js` | MCP server (createMcpServer) |
 
 ### Column Naming Convention
 
@@ -98,6 +107,11 @@ SQLite via Drizzle ORM at `data/thepopebot.sqlite` (override with `DATABASE_PATH
 | `notifications` | Job completion notifications |
 | `subscriptions` | Channel subscriptions |
 | `settings` | Key-value configuration store (also stores API keys) |
+| `programs` | Bug bounty programs (platform, bounty range, sync status) |
+| `targets` | In-scope targets (domains, IPs, URLs) linked to programs |
+| `findings` | Discovered vulnerabilities (severity, status, bounty tracking) |
+| `tools` | Installed security tools from catalog or GitHub |
+| `docker_containers` | Managed Docker containers for tool execution |
 
 ### Migration Rules
 
@@ -110,6 +124,21 @@ SQLite via Drizzle ORM at `data/thepopebot.sqlite` (override with `DATABASE_PATH
 **Workflow**: Edit `lib/db/schema.js` → `npm run db:generate` → review generated SQL in `drizzle/` → commit both schema change and migration file. Migrations auto-apply on startup via `migrate()` in `initDatabase()`.
 
 **Key files**: `lib/db/schema.js` (source of truth), `drizzle/` (generated migrations), `drizzle.config.js` (Drizzle Kit config), `lib/db/index.js` (`initDatabase()` calls `migrate()`).
+
+## Harbinger Agent Selection
+
+Chat messages can be routed to specific agent profiles using `@CODENAME` mentions:
+
+```
+@PATHFINDER enumerate subdomains for example.com
+@SAM refactor the auth module
+```
+
+The `detectAgentMention()` function in `lib/ai/index.js` matches against agent codenames, directory names, and display names (case-insensitive). When matched, `getAgentForProfile()` creates an agent with the target agent's SOUL.md as the system prompt, plus SKILLS.md and TOOLS.md appended.
+
+MCP callers pass `agent_id` to the `chat` tool. Telegram and web UI users use `@mentions`.
+
+Agent profiles live in `agents/{name}/` directories and are auto-discovered at startup by `lib/agents.js`. The runtime infrastructure lives in `lib/ai/` — never put runtime code in `agents/`.
 
 ## Security: /api vs Server Actions
 

@@ -47,7 +47,9 @@ export async function register() {
   const { discoverAgents } = await import('../lib/agents.js');
   const agents = discoverAgents();
   if (agents.length > 0) {
-    console.log(`thepopebot: ${agents.length} agent profiles loaded (${agents.map(a => a.codename || a.id).join(', ')})`);
+    const names = agents.map(a => a.codename || a.id).join(', ');
+    console.log(`thepopebot: ${agents.length} agent profiles loaded (${names})`);
+    console.log('thepopebot: use @AGENT_NAME in chat to route to a specific agent');
   }
 
   // Optionally start autonomous thinking engine
@@ -74,7 +76,18 @@ export async function register() {
     const { getAvailableVersion } = await import('../lib/db/update-check.js');
     const stored = getAvailableVersion();
     if (stored) setUpdateAvailable(stored);
-  } catch {}
+  } catch (err) {
+    console.warn('thepopebot: update check warm-up failed:', err.message);
+  }
+
+  // Pre-warm MCP client (load external tools)
+  try {
+    const { loadMcpTools } = await import('../lib/mcp/client.js');
+    const mcpTools = await loadMcpTools();
+    if (mcpTools.length > 0) console.log(`thepopebot: ${mcpTools.length} MCP tools loaded`);
+  } catch (err) {
+    console.warn('thepopebot: MCP tools pre-warm failed:', err.message);
+  }
 
   console.log('thepopebot initialized');
 }

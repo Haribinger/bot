@@ -1,41 +1,76 @@
 # Harbinger Agent System
 
-The Harbinger framework utilizes a system of fully independent, customizable agents, each designed with a specific role and personality to tackle various aspects of offensive security.
+The Harbinger framework provides a system of customizable agent profiles, each with a distinct identity, personality, and skill set. Agents can be routed to via `@mentions` in chat or selected explicitly via the MCP `chat` tool.
 
-## Agent Philosophy
+## How Agent Selection Works
 
-Each agent is a distinct entity, possessing its own:
+In chat (web UI, Telegram, or MCP), prefix your message with `@CODENAME` to route to a specific agent:
 
-- **Soul (SOUL.md):** Defines the agent's core personality, communication style, and guiding motto. This shapes how the agent approaches tasks and interacts with information.
-- **Identity (IDENTITY.md):** Specifies the agent's name, codename, primary role, and areas of specialization.
-- **Tools (TOOLS.md):** Lists the primary command-line tools and APIs the agent is proficient with, along with usage examples for each.
-- **Configuration (CONFIG.yaml):** Contains operational parameters such as the AI model to use, temperature settings, Docker image, proxy chain requirements, and handoff rules.
-- **Skills (SKILLS.md):** Outlines the advanced techniques, methodologies, and knowledge domains the agent has mastered.
+```
+@PATHFINDER enumerate subdomains for example.com
+@BREACH test the login form for SQL injection
+@SAM refactor the authentication module
+```
 
-## Inter-Agent Handoff
+The system matches against agent codenames, directory names, and display names (case-insensitive). If no match is found, the default event handler agent is used.
 
-Agents are designed to collaborate by handing off tasks to each other. For example, a `Recon Scout` might discover an interesting web application and hand off its findings to a `Web Hacker` for vulnerability assessment. The `CONFIG.yaml` file for each agent defines `handoff_to` (which agents it can pass tasks to) and `receives_from` (which agents it accepts tasks from).
+Via MCP, pass the `agent_id` parameter to the `chat` tool:
 
-## Customization and Extensibility
+```json
+{ "thread_id": "abc", "message": "scan for open ports", "agent_id": "recon-scout" }
+```
 
-The Harbinger agent system is built for maximum customizability:
+## Agent Profiles
 
-- **Modify Existing Agents:** Users can modify any aspect of an existing agent by editing its `SOUL.md`, `IDENTITY.md`, `TOOLS.md`, `CONFIG.yaml`, or `SKILLS.md` files.
-- **Add New Tools:** New tools can be added to an agent's `TOOLS.md` file, complete with usage examples.
-- **Change AI Models/Parameters:** The `CONFIG.yaml` allows for easy modification of the underlying AI model, temperature (creativity/precision), and other operational parameters.
-- **Create New Agents:** Users can create entirely new agents tailored to specific needs. A `_template/` directory is provided as a starting point.
+Each agent profile directory contains:
 
-## Agent Learning and Improvement
+| File | Purpose |
+|------|---------|
+| **SOUL.md** | Core personality, communication style, and system prompt |
+| **IDENTITY.md** | Name, codename, role, and specialization |
+| **CONFIG.yaml** | Model, temperature, Docker image, handoff rules |
+| **SKILLS.md** | Techniques, methodologies, and knowledge domains |
+| **TOOLS.md** | Command-line tools and APIs the agent is proficient with |
+| **HEARTBEAT.md** | Health check template |
 
-Agents are designed to learn and improve over time:
+### Available Agents
 
-- **Skills Growth:** As agents perform tasks, their `SKILLS.md` can be updated to reflect new techniques or methodologies they have mastered.
-- **Knowledge Graph Integration:** Agents like the `OSINT Detective` can feed into a central knowledge graph, allowing all agents to benefit from correlated intelligence and improve their effectiveness over time.
+| Codename | Name | Role |
+|----------|------|------|
+| SPECTER | OSINT Detective | Open-source intelligence gathering |
+| SAM | Coding Assistant | Code generation, review, debugging |
+| SAGE | Learning Agent | Workflow optimization |
+| PATHFINDER | Recon Scout | Attack surface discovery |
+| BREACH | Web Hacker | Web vulnerability discovery |
+| PHANTOM | Cloud Infiltrator | Cloud security assessment |
+| CIPHER | Binary Reverser | Binary analysis, reverse engineering |
+| SCRIBE | Report Writer | Vulnerability report generation |
+| LENS | Browser Agent | Browser automation via CDP |
+| MAINTAINER | Code Quality | Nightly code quality enforcement |
+| BRIEF | Morning Brief | Automated daily reporting |
 
-## How to Create a Custom Agent
+## Implementation Status
 
-To create a new agent, follow these steps:
+Agent profiles provide **personality and knowledge context** when selected. The SOUL.md becomes the system prompt, and SKILLS.md + TOOLS.md are appended as context.
 
-1.  **Copy Template:** Duplicate the `agents/_template/` directory and rename it to your new agent's name (e.g., `agents/my-new-agent/`).
-2.  **Modify Files:** Edit the `SOUL.md`, `IDENTITY.md`, `TOOLS.md`, `CONFIG.yaml`, and `SKILLS.md` files within your new agent's directory to define its unique characteristics.
-3.  **Integrate:** Update the `handoff_to` and `receives_from` fields in the `CONFIG.yaml` of other relevant agents to integrate your new agent into the workflow.
+The runtime agent engine (`lib/ai/agent.js`) provides:
+- LangGraph agent with tool use and SQLite checkpointing
+- 4 built-in tools: `create_job`, `get_job_status`, `get_system_technical_specs`, `get_skill_building_guide`
+- External MCP tools (from `config/MCP_SERVERS.json`)
+
+Agent-specific Docker containers and direct tool execution (e.g., running `nuclei` or `subfinder`) are planned for future releases. Currently, agents can instruct jobs to use these tools via the Docker agent container.
+
+## Creating a Custom Agent
+
+1. Copy `agents/_template/` to `agents/my-agent/`
+2. Edit all `.md` and `.yaml` files to define your agent's identity
+3. The agent is auto-discovered at startup and available via `@MY_AGENT_CODENAME`
+
+## Runtime Infrastructure
+
+| Component | Location | Description |
+|-----------|----------|-------------|
+| Agent Discovery | `lib/agents.js` | Scans `agents/` for profiles |
+| Agent Runtime | `lib/ai/agent.js` | LangGraph agent with profile-specific system prompts |
+| Model Router | `lib/ai/model-router.js` | Complexity-based model selection |
+| Autonomous Engine | `lib/ai/autonomous-engine.js` | Background thinking loop (opt-in) |

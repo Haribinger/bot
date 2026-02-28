@@ -30,7 +30,7 @@ function getFireTriggers() {
 }
 
 // Routes that have their own authentication
-const PUBLIC_ROUTES = ['/telegram/webhook', '/github/webhook', '/ping'];
+const PUBLIC_ROUTES = ['/telegram/webhook', '/github/webhook', '/ping', '/health'];
 
 /**
  * Timing-safe string comparison.
@@ -243,6 +243,7 @@ async function POST(request) {
     case '/telegram/webhook':   return handleTelegramWebhook(request);
     case '/telegram/register':  return handleTelegramRegister(request);
     case '/github/webhook':     return handleGithubWebhook(request);
+    case '/mcp': { const { handleMcpRequest } = await import('../lib/mcp/handler.js'); return handleMcpRequest(request); }
     default:                    return Response.json({ error: 'Not found' }, { status: 404 });
   }
 }
@@ -257,7 +258,15 @@ async function GET(request) {
 
   switch (routePath) {
     case '/ping':           return Response.json({ message: 'Pong!' });
+    case '/health': {
+      const checks = { status: 'ok', timestamp: new Date().toISOString() };
+      try { const { getDb } = await import('../lib/db/index.js'); getDb(); checks.database = 'ok'; } catch { checks.database = 'error'; checks.status = 'degraded'; }
+      try { const { discoverAgents } = await import('../lib/agents.js'); checks.agents = discoverAgents().length; } catch { checks.agents = 0; }
+      checks.env = { GH_TOKEN: !!process.env.GH_TOKEN, GH_OWNER: !!process.env.GH_OWNER, GH_REPO: !!process.env.GH_REPO };
+      return Response.json(checks);
+    }
     case '/jobs/status':    return handleJobStatus(request);
+    case '/mcp': { const { handleMcpRequest } = await import('../lib/mcp/handler.js'); return handleMcpRequest(request); }
     default:                return Response.json({ error: 'Not found' }, { status: 404 });
   }
 }

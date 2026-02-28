@@ -293,6 +293,85 @@ See [Security](docs/SECURITY.md) for full details on what's exposed, the risks, 
 
 ---
 
+## Harbinger Agent System
+
+thepopebot includes 11 specialized agent profiles (the Harbinger swarm), each with a distinct personality, skills, and area of expertise. Route messages to specific agents using `@mentions`:
+
+```
+@PATHFINDER enumerate subdomains for example.com
+@BREACH scan the login page for XSS
+@SAM refactor the database module
+@SPECTER run OSINT on target.com
+```
+
+Available agents: **SPECTER** (OSINT), **SAM** (Coding), **SAGE** (Learning), **PATHFINDER** (Recon), **BREACH** (Web Hacking), **PHANTOM** (Cloud), **CIPHER** (Binary), **SCRIBE** (Reports), **LENS** (Browser), **MAINTAINER** (Code Quality), **BRIEF** (Daily Briefs).
+
+Create custom agents by copying `agents/_template/` and editing the profile files. Agents are auto-discovered at startup.
+
+See [agents/README.md](agents/README.md) for the full guide.
+
+---
+
+## Bug Bounty Automation
+
+thepopebot includes a full bug bounty hunting automation suite — manage programs, targets, findings, and security tools from the web UI.
+
+### Features
+
+- **Targets Dashboard** (`/targets`) — Manage bug bounty programs and their in-scope targets. Sync targets directly from HackerOne, Bugcrowd, Intigriti, YesWeHack, and Federacy using live data from [bounty-targets-data](https://github.com/arkadiyt/bounty-targets-data).
+- **Findings Feed** (`/findings`) — Track discovered vulnerabilities with severity ratings, status workflow (new → triaging → confirmed → reported → bounty_paid), and bounty amounts.
+- **Toolbox** (`/toolbox`) — Browse and install from a catalog of 68+ real security tools (subfinder, nuclei, httpx, ffuf, sqlmap, etc.). Install tools from any GitHub repo. Manage Docker containers for agent terminal access.
+
+### Quick Start
+
+After setup, visit your app URL and navigate to **Targets** in the sidebar to start:
+
+1. Click **Sync from Bounty Platforms** to import programs from HackerOne/Bugcrowd/etc.
+2. Or add programs manually with the **Add** button
+3. Add targets to your programs (domains, IPs, wildcards, APIs)
+4. Visit **Toolbox** to install scanning tools from the catalog
+5. Findings appear automatically as agents discover vulnerabilities, or add them manually
+
+See [Bug Bounty](docs/BUG_BOUNTY.md) for the full guide.
+
+---
+
+## MCP (Model Context Protocol)
+
+thepopebot exposes an MCP server at `/api/mcp` and can consume tools from external MCP servers — connecting your agents to Claude Desktop, Cursor, and any MCP-compatible client.
+
+### Server (expose your agent's tools)
+
+External AI clients connect to `https://your-app-url/api/mcp` with your API key. Exposed capabilities:
+
+| Type | Items |
+|------|-------|
+| **Tools** | `create_job`, `get_job_status`, `chat`, `list_agents`, `get_agent_profile` |
+| **Resources** | `agent://agents`, `agent://{id}/soul`, `config://soul`, `config://crons`, `config://triggers` |
+| **Prompts** | `agent-prompt` (parameterized by agent ID) |
+
+### Client (consume external MCP tools)
+
+Add external MCP servers to `config/MCP_SERVERS.json`:
+
+```json
+[
+  {
+    "name": "my-tool-server",
+    "transport": "http",
+    "url": "http://localhost:3001/mcp",
+    "headers": {},
+    "enabled": true
+  }
+]
+```
+
+External tools are automatically available to your agents. Manage and test them from **Settings → MCP** in the web UI.
+
+See [MCP Integration](docs/MCP.md) for the full guide.
+
+---
+
 ## Running Different Models
 
 The Event Handler (chat, Telegram, webhooks) and Jobs (Docker agent) are two independent layers — each can run a different LLM. Use Claude for interactive chat and a cheaper or local model for long-running jobs, mix providers per cron entry, or run everything on a single model.
@@ -317,6 +396,8 @@ See [Running Different Models](docs/RUNNING_DIFFERENT_MODELS.md) for the full gu
 | [Pre-Release](docs/PRE_RELEASE.md) | Installing beta/alpha builds |
 | [Security](docs/SECURITY.md) | Security disclaimer, local development risks |
 | [Upgrading](docs/UPGRADE.md) | Automated upgrades, recovering from failed upgrades |
+| [Bug Bounty](docs/BUG_BOUNTY.md) | Targets, findings, tool registry, platform sync |
+| [MCP Integration](docs/MCP.md) | MCP server/client setup, external tool consumption |
 
 ### Maintainer
 

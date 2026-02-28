@@ -8,6 +8,20 @@
       "when": 1771448716757,
       "tag": "0000_initial",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1772228400000,
+      "tag": "0001_bounty_and_registry",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1772315400000,
+      "tag": "0002_sync_columns",
+      "breakpoints": true
     }
   ]
 }

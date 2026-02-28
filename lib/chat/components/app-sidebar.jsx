@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { CirclePlusIcon, PanelLeftIcon, MessageIcon, BellIcon, SwarmIcon, ArrowUpCircleIcon, LifeBuoyIcon } from './icons.js';
+import { CirclePlusIcon, PanelLeftIcon, MessageIcon, BellIcon, SwarmIcon, ArrowUpCircleIcon, LifeBuoyIcon, CrosshairIcon, ShieldIcon, PackageIcon } from './icons.js';
 import { getUnreadNotificationCount, getAppVersion } from '../actions.js';
 import { SidebarHistory } from './sidebar-history.js';
 import { SidebarUserNav } from './sidebar-user-nav.js';
@@ -126,6 +126,60 @@ export function AppSidebar({ user }) {
               </TooltipTrigger>
               {collapsed && (
                 <TooltipContent side="right">Swarm</TooltipContent>
+              )}
+            </Tooltip>
+          </SidebarMenuItem>
+
+          {/* Targets */}
+          <SidebarMenuItem>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <SidebarMenuButton
+                  className={collapsed ? 'justify-center' : ''}
+                  onClick={() => { window.location.href = '/targets'; }}
+                >
+                  <CrosshairIcon size={16} />
+                  {!collapsed && <span>Targets</span>}
+                </SidebarMenuButton>
+              </TooltipTrigger>
+              {collapsed && (
+                <TooltipContent side="right">Targets</TooltipContent>
+              )}
+            </Tooltip>
+          </SidebarMenuItem>
+
+          {/* Findings */}
+          <SidebarMenuItem>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <SidebarMenuButton
+                  className={collapsed ? 'justify-center' : ''}
+                  onClick={() => { window.location.href = '/findings'; }}
+                >
+                  <ShieldIcon size={16} />
+                  {!collapsed && <span>Findings</span>}
+                </SidebarMenuButton>
+              </TooltipTrigger>
+              {collapsed && (
+                <TooltipContent side="right">Findings</TooltipContent>
+              )}
+            </Tooltip>
+          </SidebarMenuItem>
+
+          {/* Toolbox */}
+          <SidebarMenuItem>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <SidebarMenuButton
+                  className={collapsed ? 'justify-center' : ''}
+                  onClick={() => { window.location.href = '/toolbox'; }}
+                >
+                  <PackageIcon size={16} />
+                  {!collapsed && <span>Toolbox</span>}
+                </SidebarMenuButton>
+              </TooltipTrigger>
+              {collapsed && (
+                <TooltipContent side="right">Toolbox</TooltipContent>
               )}
             </Tooltip>
           </SidebarMenuItem>

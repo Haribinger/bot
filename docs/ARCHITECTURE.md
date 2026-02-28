@@ -102,12 +102,15 @@ The Event Handler is a Next.js API route handler that provides orchestration cap
 
 | Endpoint | Method | x-api-key | Purpose |
 |----------|--------|-----------|---------|
-| `/api/ping` | GET | N | Health check, returns `{"message": "Pong!"}` |
+| `/api/ping` | GET | N | Simple health check, returns `{"message": "Pong!"}` |
+| `/api/health` | GET | N | Detailed health check (database, agents, env vars) |
 | `/api/create-job` | POST | Y | Generic webhook for job creation |
 | `/api/telegram/webhook` | POST | N | Telegram bot webhook (uses its own secret) |
 | `/api/telegram/register` | POST | Y | Register Telegram webhook URL |
 | `/api/github/webhook` | POST | N | Receives notifications from GitHub Actions (uses its own secret) |
 | `/api/jobs/status` | GET | Y | Check status of a running job |
+| `/api/mcp` | POST | Y | MCP JSON-RPC endpoint (tool calls, resource reads) |
+| `/api/mcp` | GET | Y | MCP server capability info |
 
 API keys are database-backed and managed via the web UI Settings page. Use the `x-api-key` header for authentication.
 
@@ -149,6 +152,9 @@ curl -X POST https://your-app-url/api/telegram/register \
 - **`lib/ai/`** - LLM integration (multi-provider chat, streaming, agent, tools)
 - **`lib/channels/`** - Channel adapter pattern for Telegram (and future channels)
 - **`lib/tools/`** - Job creation, GitHub API, Telegram, and OpenAI utilities
+- **`lib/mcp/`** - MCP server (exposes tools/resources/prompts) and client (consumes external MCP tools)
+- **`lib/bounty/`** - Bug bounty management (programs, targets, findings, platform sync)
+- **`lib/registry/`** - Security tool catalog (68+ tools) and Docker container management
 
 ---
 
