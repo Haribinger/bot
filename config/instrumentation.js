@@ -43,6 +43,24 @@ export async function register() {
   const { initDatabase } = await import('../lib/db/index.js');
   initDatabase();
 
+  // Discover agent profiles
+  const { discoverAgents } = await import('../lib/agents.js');
+  const agents = discoverAgents();
+  if (agents.length > 0) {
+    console.log(`thepopebot: ${agents.length} agent profiles loaded (${agents.map(a => a.codename || a.id).join(', ')})`);
+  }
+
+  // Optionally start autonomous thinking engine
+  if (process.env.AUTONOMOUS_THINKING === 'true') {
+    const { startAutonomousEngine } = await import('../lib/ai/autonomous-engine.js');
+    startAutonomousEngine({
+      agentId: 'thepopebot',
+      agentName: 'THEPOPEBOT',
+      interval: Number(process.env.AUTONOMOUS_INTERVAL) || 60000,
+    });
+    console.log('thepopebot: autonomous thinking engine started');
+  }
+
   // Start cron scheduler
   const { loadCrons } = await import('../lib/cron.js');
   loadCrons();

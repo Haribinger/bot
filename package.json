@@ -21,6 +21,7 @@
     "./package.json": "./package.json"
   },
   "files": [
+    "agents/",
     "bin/",
     "lib/",
     "api/",

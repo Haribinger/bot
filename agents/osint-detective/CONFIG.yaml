@@ -1,0 +1,24 @@
+model: configurable
+temperature: 0.5 # balanced
+docker_image: harbinger/osint-detective
+proxy_chain: required
+tor_enabled: configurable
+data_retention: configurable
+auto_handoff: true
+handoff_to: [recon-scout, web-hacker]
+feeds_knowledge_graph: true
+
+# Resource limits (enforced by Docker)
+memory_mb: 2048
+cpu_count: 2
+
+# Agent capabilities
+capabilities:
+  - email_harvesting
+  - social_media_profiling
+  - domain_whois_lookup
+  - breach_data_search
+  - github_dorking
+  - google_dorking
+  - dns_history
+  - certificate_search

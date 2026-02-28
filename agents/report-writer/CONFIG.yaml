@@ -1,0 +1,21 @@
+model: configurable
+temperature: 0.6 # professional but engaging
+docker_image: harbinger/report-writer
+output_formats: [markdown, pdf, html]
+auto_submit: configurable
+platforms: [hackerone, bugcrowd, intigriti, yeswehack]
+template_dir: configurable
+receives_from: [all_agents]
+
+# Resource limits (enforced by Docker)
+memory_mb: 1024
+cpu_count: 1
+
+# Agent capabilities
+capabilities:
+  - vulnerability_report_generation
+  - cvss_scoring
+  - proof_of_concept_documentation
+  - platform_submission
+  - executive_summary
+  - remediation_guidance
