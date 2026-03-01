@@ -138,27 +138,64 @@ async function init() {
     const outPath = destPath(relPath);
     const dest = path.join(cwd, outPath);
 
+    // Helper function to copy files or symlinks
+    function copySourceToDest(srcPath, destPath) {
+      const destDir = path.dirname(destPath);
+      fs.mkdirSync(destDir, { recursive: true });
+
+      // Check if source is a symlink
+      const stats = fs.lstatSync(srcPath);
+      if (stats.isSymbolicLink()) {
+        // Read the symlink target and recreate it
+        const target = fs.readlinkSync(srcPath);
+        // Remove existing dest if it exists
+        try {
+          fs.unlinkSync(destPath);
+        } catch (e) {
+          // Ignore if dest doesn't exist
+        }
+        try {
+          fs.symlinkSync(target, destPath);
+        } catch (err) {
+          // If symlink creation fails, try to create the target directory
+          const targetPath = path.join(destDir, target);
+          const targetDir = path.dirname(targetPath);
+          fs.mkdirSync(targetDir, { recursive: true });
+          fs.symlinkSync(target, destPath);
+        }
+      } else {
+        // Regular file — use copyFileSync
+        fs.copyFileSync(srcPath, destPath);
+      }
+    }
+
     if (!fs.existsSync(dest)) {
       // File doesn't exist — create it
-      fs.mkdirSync(path.dirname(dest), { recursive: true });
-      fs.copyFileSync(src, dest);
-      created.push(outPath);
-      console.log(`  Created ${outPath}`);
+      try {
+        copySourceToDest(src, dest);
+        created.push(outPath);
+        console.log(`  Created ${outPath}`);
+      } catch (err) {
+        console.error(`  Error creating ${outPath}: ${err.message}`);
+      }
     } else {
       // File exists — check if template has changed
-      const srcContent = fs.readFileSync(src);
-      const destContent = fs.readFileSync(dest);
-      if (srcContent.equals(destContent)) {
-        skipped.push(outPath);
-      } else if (!noManaged && isManaged(outPath)) {
-        // Managed file differs — auto-update to match package
-        fs.mkdirSync(path.dirname(dest), { recursive: true });
-        fs.copyFileSync(src, dest);
-        updated.push(outPath);
-        console.log(`  Updated ${outPath}`);
-      } else {
-        changed.push(outPath);
-        console.log(`  Skipped ${outPath} (already exists)`);
+      try {
+        const srcContent = fs.readFileSync(src);
+        const destContent = fs.readFileSync(dest);
+        if (srcContent.equals(destContent)) {
+          skipped.push(outPath);
+        } else if (!noManaged && isManaged(outPath)) {
+          // Managed file differs — auto-update to match package
+          copySourceToDest(src, dest);
+          updated.push(outPath);
+          console.log(`  Updated ${outPath}`);
+        } else {
+          changed.push(outPath);
+          console.log(`  Skipped ${outPath} (already exists)`);
+        }
+      } catch (err) {
+        console.error(`  Error processing ${outPath}: ${err.message}`);
       }
     }
   }
@@ -168,7 +205,7 @@ async function init() {
   if (!fs.existsSync(pkgPath)) {
     const dirName = path.basename(cwd);
     const { version } = JSON.parse(fs.readFileSync(path.join(packageDir, 'package.json'), 'utf8'));
-    const harbingerDep = version.includes('-') ? version : '^1.0.0';
+    const harbingerDep = `^${version}`;
     const pkg = {
       name: dirName,
       private: true,
