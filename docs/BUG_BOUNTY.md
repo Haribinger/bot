@@ -1,6 +1,6 @@
 # Bug Bounty Automation
 
-thepopebot includes a complete bug bounty hunting automation suite with target management, vulnerability tracking, and a security tool marketplace.
+Harbinger includes a complete bug bounty hunting automation suite with target management, vulnerability tracking, and a security tool marketplace.
 
 ---
 
@@ -185,4 +185,4 @@ All bounty operations are available as server actions (authenticated via session
 - `uninstallTool(id)` — Uninstall a tool
 - `toggleTool(id)` — Enable/disable a tool
 
-Import server actions from `thepopebot/chat` for UI components, or from the backing modules directly for programmatic use.
+Import server actions from `@harbinger-ai/harbinger/chat` for UI components, or from the backing modules directly for programmatic use.

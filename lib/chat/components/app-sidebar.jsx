@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { CirclePlusIcon, PanelLeftIcon, MessageIcon, BellIcon, SwarmIcon, ArrowUpCircleIcon, LifeBuoyIcon, CrosshairIcon, ShieldIcon, PackageIcon } from './icons.js';
+import { CirclePlusIcon, PanelLeftIcon, MessageIcon, BellIcon, SwarmIcon, ArrowUpCircleIcon, LifeBuoyIcon, CrosshairIcon, ShieldIcon, PackageIcon, CommandIcon, UsersIcon, TerminalIcon } from './icons.js';
 import { getUnreadNotificationCount, getAppVersion } from '../actions.js';
 import { SidebarHistory } from './sidebar-history.js';
 import { SidebarUserNav } from './sidebar-user-nav.js';
@@ -129,6 +129,42 @@ export function AppSidebar({ user }) {
             </Tooltip>
           </SidebarMenuItem>
 
+          {/* Mission Control */}
+          <SidebarMenuItem>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <SidebarMenuButton
+                  className={collapsed ? 'justify-center' : ''}
+                  onClick={() => { window.location.href = '/mission-control'; }}
+                >
+                  <CommandIcon size={16} />
+                  {!collapsed && <span>Mission Control</span>}
+                </SidebarMenuButton>
+              </TooltipTrigger>
+              {collapsed && (
+                <TooltipContent side="right">Mission Control</TooltipContent>
+              )}
+            </Tooltip>
+          </SidebarMenuItem>
+
+          {/* Agents */}
+          <SidebarMenuItem>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <SidebarMenuButton
+                  className={collapsed ? 'justify-center' : ''}
+                  onClick={() => { window.location.href = '/agents'; }}
+                >
+                  <UsersIcon size={16} />
+                  {!collapsed && <span>Agents</span>}
+                </SidebarMenuButton>
+              </TooltipTrigger>
+              {collapsed && (
+                <TooltipContent side="right">Agents</TooltipContent>
+              )}
+            </Tooltip>
+          </SidebarMenuItem>
+
           {/* Targets */}
           <SidebarMenuItem>
             <Tooltip>
@@ -179,6 +215,24 @@ export function AppSidebar({ user }) {
               </TooltipTrigger>
               {collapsed && (
                 <TooltipContent side="right">Toolbox</TooltipContent>
+              )}
+            </Tooltip>
+          </SidebarMenuItem>
+
+          {/* Logs */}
+          <SidebarMenuItem>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <SidebarMenuButton
+                  className={collapsed ? 'justify-center' : ''}
+                  onClick={() => { window.location.href = '/logs'; }}
+                >
+                  <TerminalIcon size={16} />
+                  {!collapsed && <span>Logs</span>}
+                </SidebarMenuButton>
+              </TooltipTrigger>
+              {collapsed && (
+                <TooltipContent side="right">Logs</TooltipContent>
               )}
             </Tooltip>
           </SidebarMenuItem>

@@ -1,6 +1,6 @@
 # MCP Integration
 
-thepopebot supports the [Model Context Protocol](https://modelcontextprotocol.io/) (MCP), enabling two-way tool sharing between your agents and external AI clients.
+Harbinger supports the [Model Context Protocol](https://modelcontextprotocol.io/) (MCP), enabling two-way tool sharing between your agents and external AI clients.
 
 ---
 
@@ -8,7 +8,7 @@ thepopebot supports the [Model Context Protocol](https://modelcontextprotocol.io
 
 | Feature | What it does |
 |---------|-------------|
-| **MCP Server** | Exposes thepopebot's capabilities to external clients (Claude Desktop, Cursor, etc.) |
+| **MCP Server** | Exposes Harbinger's capabilities to external clients (Claude Desktop, Cursor, etc.) |
 | **MCP Client** | Consumes tools from external MCP servers, making them available to your agents |
 | **MCP UI** | Manage both from Settings → MCP in the web interface |
 
@@ -16,7 +16,7 @@ thepopebot supports the [Model Context Protocol](https://modelcontextprotocol.io
 
 ## MCP Server
 
-thepopebot exposes an MCP server at `/api/mcp` using the Streamable HTTP transport. External AI clients can connect to call your agent's tools, read resources, and use prompts.
+Harbinger exposes an MCP server at `/api/mcp` using the Streamable HTTP transport. External AI clients can connect to call your agent's tools, read resources, and use prompts.
 
 ### Authentication
 
@@ -29,7 +29,7 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
 ```json
 {
   "mcpServers": {
-    "thepopebot": {
+    "Harbinger": {
       "url": "https://your-app-url/api/mcp",
       "headers": {
         "x-api-key": "YOUR_API_KEY"
@@ -86,11 +86,11 @@ Or use the **Test** button in Settings → MCP in the web UI.
 
 ## MCP Client
 
-thepopebot can consume tools from external MCP servers, making them available to your LangChain agents alongside the built-in tools.
+Harbinger can consume tools from external MCP servers, making them available to your LangChain agents alongside the built-in tools.
 
 ### Configuration
 
-Create `config/MCP_SERVERS.json` (or it's scaffolded by `thepopebot init`):
+Create `config/MCP_SERVERS.json` (or it's scaffolded by `harbinger init`):
 
 ```json
 [
@@ -116,7 +116,7 @@ Each entry:
 
 ### How It Works
 
-1. On server startup, thepopebot reads `MCP_SERVERS.json` and connects to enabled servers using `@langchain/mcp-adapters`
+1. On server startup, Harbinger reads `MCP_SERVERS.json` and connects to enabled servers using `@langchain/mcp-adapters`
 2. External tools are converted to LangChain-compatible tools
 3. These tools are spread into every agent's tool array alongside built-in tools
 4. Agents can invoke external MCP tools just like built-in ones
@@ -146,7 +146,7 @@ The client will reconnect and reload all external tools.
 The MCP server module is also available as an NPM export for programmatic use:
 
 ```js
-import { createMcpServer } from 'thepopebot/mcp';
+import { createMcpServer } from '@harbinger-ai/harbinger/mcp';
 
 const server = createMcpServer();
 // Use with any MCP transport
@@ -165,7 +165,7 @@ External AI Client (Claude Desktop, Cursor, etc.)
 │  (Streamable HTTP)   │ ◄── lib/mcp/handler.js (HTTP handler)
 └──────────────────────┘
           │
-          ▼ calls existing thepopebot functions
+          ▼ calls existing Harbinger functions
    createJob(), chat(), discoverAgents(), etc.
 
 

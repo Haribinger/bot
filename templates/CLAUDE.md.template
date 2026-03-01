@@ -21,7 +21,7 @@ project-root/
 ├── package.json
 │
 ├── app/                               # Next.js app directory (page shells + client components)
-│   ├── api/[...thepopebot]/route.js   # Catch-all API route (re-exports from @harbinger-ai/harbinger/api)
+│   ├── api/[...harbinger]/route.js   # Catch-all API route (re-exports from @harbinger-ai/harbinger/api)
 │   ├── stream/chat/route.js           # Chat streaming endpoint (session auth)
 │   └── components/                    # Client-side components
 │
@@ -216,7 +216,7 @@ All API routes are under `/api/`, handled by the catch-all route.
 | `/api/jobs/status` | GET | `x-api-key` | Check status of running/queued jobs |
 | `/api/ping` | GET | Public | Health check |
 
-**`x-api-key`**: Database-backed API keys generated through the web UI (Settings > Secrets). Keys are SHA-256 hashed, verified with timing-safe comparison. Format: `tpb_` prefix + 64 hex characters.
+**`x-api-key`**: Database-backed API keys generated through the web UI (Settings > Secrets). Keys are SHA-256 hashed, verified with timing-safe comparison. Format: `hbr_` prefix + 64 hex characters.
 
 ## Web Interface
 

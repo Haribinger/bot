@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { PageLayout } from './page-layout.js';
-import { ClockIcon, ZapIcon, KeyIcon, PlugIcon } from './icons.js';
+import { ClockIcon, ZapIcon, KeyIcon, PlugIcon, CpuIcon, ActivityIcon } from './icons.js';
 
 const TABS = [
   { id: 'crons', label: 'Crons', href: '/settings/crons', icon: ClockIcon },
   { id: 'triggers', label: 'Triggers', href: '/settings/triggers', icon: ZapIcon },
   { id: 'secrets', label: 'Secrets', href: '/settings/secrets', icon: KeyIcon },
   { id: 'mcp', label: 'MCP', href: '/settings/mcp', icon: PlugIcon },
+  { id: 'providers', label: 'Providers', href: '/settings/providers', icon: CpuIcon },
+  { id: 'diagnostics', label: 'Diagnostics', href: '/settings/diagnostics', icon: ActivityIcon },
 ];
 
 export function SettingsLayout({ session, children }) {

@@ -1,6 +1,6 @@
 {
   "name": "@harbinger-ai/harbinger",
-  "version": "0.1.1",
+  "version": "0.2.1",
   "type": "module",
   "description": "Create autonomous AI agents with a two-layer architecture: Next.js Event Handler + Docker Agent.",
   "bin": {

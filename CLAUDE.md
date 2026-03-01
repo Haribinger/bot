@@ -1,14 +1,14 @@
-# thepopebot — Package Source Reference
+# Harbinger — Package Source Reference
 
-Technical reference for AI assistants modifying the thepopebot NPM package source code.
+Technical reference for AI assistants modifying the Harbinger NPM package source code.
 
 **Architecture**: Event Handler (Next.js) creates `job/*` branches → GitHub Actions runs Docker agent (Pi) → task executed → PR created → auto-merge → notification. Agent jobs log to `logs/{JOB_ID}/`.
 
 ## Package vs. Templates — Where Code Goes
 
-All event handler logic, API routes, library code, and core functionality lives in the **npm package** (`api/`, `lib/`, `config/`, `bin/`). This is what users import when they `import ... from 'thepopebot/...'`.
+All event handler logic, API routes, library code, and core functionality lives in the **npm package** (`api/`, `lib/`, `config/`, `bin/`). This is what users import when they `import ... from '@harbinger-ai/harbinger/...'`.
 
-The `templates/` directory contains **only files that get scaffolded into user projects** via `npx thepopebot init`. Templates are for user-editable configuration and thin wiring — things users are expected to customize or override. Never add core logic to templates.
+The `templates/` directory contains **only files that get scaffolded into user projects** via `npx harbinger init`. Templates are for user-editable configuration and thin wiring — things users are expected to customize or override. Never add core logic to templates.
 
 **When adding or modifying event handler code, always put it in the package itself (e.g., `api/`, `lib/`), not in `templates/`.** Templates should only contain:
 - Configuration files users edit (`config/SOUL.md`, `config/CRONS.json`, etc.)
@@ -40,7 +40,7 @@ The `templates/` directory contains **only files that get scaffolded into user p
 │   └── utils/
 │       └── render-md.js        # Markdown {{include}} processor
 ├── config/
-│   ├── index.js                # withThepopebot() Next.js config wrapper
+│   ├── index.js                # withHarbinger() Next.js config wrapper
 │   └── instrumentation.js      # Server startup hook (loads .env, starts crons)
 ├── bin/
 │   └── cli.js                  # CLI entry point
@@ -60,9 +60,9 @@ The `templates/` directory contains **only files that get scaffolded into user p
 | `lib/cron.js` | Cron scheduler — loads `config/CRONS.json` at server start |
 | `lib/triggers.js` | Trigger middleware — loads `config/TRIGGERS.json` |
 | `lib/utils/render-md.js` | Markdown include and variable processor (`{{filepath}}`, `{{datetime}}`, `{{skills}}`) |
-| `config/index.js` | `withThepopebot()` Next.js config wrapper |
+| `config/index.js` | `withHarbinger()` Next.js config wrapper |
 | `config/instrumentation.js` | `register()` startup hook (loads .env, validates AUTH_SECRET, init DB, starts crons) |
-| `bin/cli.js` | CLI entry point (`thepopebot init`, `setup`, `reset`, `diff`, etc.) |
+| `bin/cli.js` | CLI entry point (`harbinger init`, `setup`, `reset`, `diff`, etc.) |
 | `lib/ai/index.js` | Chat, streaming, and job summary functions |
 | `lib/ai/agent.js` | LangGraph agent with SQLite checkpointing and tool use |
 | `lib/channels/base.js` | Channel adapter base class (normalize messages across platforms) |
@@ -78,17 +78,17 @@ The `templates/` directory contains **only files that get scaffolded into user p
 
 | Import | Module | Purpose |
 |--------|--------|---------|
-| `thepopebot/api` | `api/index.js` | `GET` and `POST` route handlers — re-exported by the user's catch-all route |
-| `thepopebot/config` | `config/index.js` | `withThepopebot()` — wraps the user's Next.js config to mark server-only packages as external |
-| `thepopebot/instrumentation` | `config/instrumentation.js` | `register()` — Next.js instrumentation hook that loads `.env` and starts cron jobs on server start |
-| `thepopebot/auth` | `lib/auth/index.js` | Auth helpers (`auth()`, `getPageAuthState()`) |
-| `thepopebot/auth/actions` | `lib/auth/actions.js` | Server action for admin setup (`setupAdmin()`) |
-| `thepopebot/chat` | `lib/chat/components/index.js` | Chat UI components |
-| `thepopebot/chat/actions` | `lib/chat/actions.js` | Server actions for chats, notifications, and swarm |
-| `thepopebot/chat/api` | `lib/chat/api.js` | Dedicated chat streaming route handler (session auth) |
-| `thepopebot/db` | `lib/db/index.js` | Database access |
-| `thepopebot/middleware` | `lib/auth/middleware.js` | Auth middleware |
-| `thepopebot/mcp` | `lib/mcp/server.js` | MCP server (createMcpServer) |
+| `@harbinger-ai/harbinger/api` | `api/index.js` | `GET` and `POST` route handlers — re-exported by the user's catch-all route |
+| `@harbinger-ai/harbinger/config` | `config/index.js` | `withHarbinger()` — wraps the user's Next.js config to mark server-only packages as external |
+| `@harbinger-ai/harbinger/instrumentation` | `config/instrumentation.js` | `register()` — Next.js instrumentation hook that loads `.env` and starts cron jobs on server start |
+| `@harbinger-ai/harbinger/auth` | `lib/auth/index.js` | Auth helpers (`auth()`, `getPageAuthState()`) |
+| `@harbinger-ai/harbinger/auth/actions` | `lib/auth/actions.js` | Server action for admin setup (`setupAdmin()`) |
+| `@harbinger-ai/harbinger/chat` | `lib/chat/components/index.js` | Chat UI components |
+| `@harbinger-ai/harbinger/chat/actions` | `lib/chat/actions.js` | Server actions for chats, notifications, and swarm |
+| `@harbinger-ai/harbinger/chat/api` | `lib/chat/api.js` | Dedicated chat streaming route handler (session auth) |
+| `@harbinger-ai/harbinger/db` | `lib/db/index.js` | Database access |
+| `@harbinger-ai/harbinger/middleware` | `lib/auth/middleware.js` | Auth middleware |
+| `@harbinger-ai/harbinger/mcp` | `lib/mcp/server.js` | MCP server (createMcpServer) |
 
 ### Column Naming Convention
 
@@ -97,7 +97,7 @@ Example: `createdAt: integer('created_at')` — use `createdAt` in JS, SQL colum
 
 ## Database
 
-SQLite via Drizzle ORM at `data/thepopebot.sqlite` (override with `DATABASE_PATH`). Auto-initialized on server start.
+SQLite via Drizzle ORM at `data/harbinger.sqlite` (override with `DATABASE_PATH`). Auto-initialized on server start.
 
 | Table | Purpose |
 |-------|---------|

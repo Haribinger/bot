@@ -1,4 +1,4 @@
-# Contributing to thepopebot
+# Contributing to Harbinger
 
 Thanks for your interest in contributing! We welcome bug fixes, features, docs improvements, and other contributions.
 
